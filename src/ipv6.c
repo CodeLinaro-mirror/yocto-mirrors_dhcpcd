@@ -2398,11 +2398,14 @@ inet6_dhcproutes(rb_tree_t *routes, struct dhcpcd_ctx *ctx,
 	const struct ipv6_addr *addr;
 	struct rt *rt;
 
+	logdebugx("CONSIDERING DHCP %d ROUTES", dstate);
 	TAILQ_FOREACH(ifp, ctx->ifaces, next) {
 		d6_state = D6_CSTATE(ifp);
 		if (d6_state && d6_state->state == dstate) {
 			TAILQ_FOREACH(addr, &d6_state->addrs, next) {
 				rt = inet6_makeprefix(ifp, NULL, addr);
+				logdebugx("IFP %s ADDR %s RT %p", ifp->name,
+				    addr->saddr, rt);
 				if (rt == NULL)
 					continue;
 				rt->rt_dflags |= RTDF_DHCP;
@@ -2410,6 +2413,7 @@ inet6_dhcproutes(rb_tree_t *routes, struct dhcpcd_ctx *ctx,
 			}
 		}
 	}
+	logdebugx("DONE CONSIDERING DHCP %d ROUTES", dstate);
 	return 0;
 }
 #endif
