@@ -1040,7 +1040,7 @@ ipv6_freeaddr(struct ipv6_addr *ia)
 
 void
 ipv6_freedrop_addrs(struct ipv6_addrhead *addrs, int drop,
-    const struct interface *ifd)
+    unsigned int notflags, const struct interface *ifd)
 {
 	struct ipv6_addr *ap, *apn, *apf;
 	struct timespec now;
@@ -1050,6 +1050,8 @@ ipv6_freedrop_addrs(struct ipv6_addrhead *addrs, int drop,
 #endif
 	timespecclear(&now);
 	TAILQ_FOREACH_SAFE(ap, addrs, next, apn) {
+		if (ap->flags & notflags)
+			continue;
 #ifndef SMALL
 		if (ifd != NULL &&
 		    (ap->delegating_prefix == NULL ||
@@ -1862,7 +1864,7 @@ ipv6_freedrop(struct interface *ifp, int drop)
 		free(cb);
 	}
 
-	ipv6_freedrop_addrs(&state->addrs, drop ? 2 : 0, NULL);
+	ipv6_freedrop_addrs(&state->addrs, drop ? 2 : 0, 0, NULL);
 	if (drop) {
 		if (ifp->ctx->ra_routers != NULL)
 			rt_build(ifp->ctx, AF_INET6);

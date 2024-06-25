@@ -270,7 +270,7 @@ int ipv6_addaddr(struct ipv6_addr *, const struct timespec *);
 int ipv6_doaddr(struct ipv6_addr *, struct timespec *);
 ssize_t ipv6_addaddrs(struct ipv6_addrhead *addrs);
 void ipv6_deleteaddr(struct ipv6_addr *);
-void ipv6_freedrop_addrs(struct ipv6_addrhead *, int,
+void ipv6_freedrop_addrs(struct ipv6_addrhead *, int, unsigned int,
     const struct interface *);
 void ipv6_handleifa(struct dhcpcd_ctx *ctx, int, struct if_head *,
     const char *, const struct in6_addr *, uint8_t, int, pid_t);
