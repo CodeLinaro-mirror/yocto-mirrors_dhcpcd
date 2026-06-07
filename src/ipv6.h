@@ -36,13 +36,21 @@
 #include "config.h"
 #include "if.h"
 
-#ifndef __linux__
-#if !defined(__QNX__) && !defined(__sun)
-#include <sys/endian.h>
-#endif
+#ifdef BSD
 #include <net/if.h>
-#ifndef __sun
 #include <netinet6/in6_var.h>
+
+/*
+ * BSD kernels don't inform userland of DAD results.
+ * See the discussion here:
+ *    http://mail-index.netbsd.org/tech-net/2013/03/15/msg004019.html
+ */
+#define IPV6_POLLADDRFLAG
+
+/* This was fixed in NetBSD */
+#if (defined(__DragonFly_version) && __DragonFly_version >= 500704) || \
+    (defined(__NetBSD_Version__) && __NetBSD_Version__ >= 699002000)
+#undef IPV6_POLLADDRFLAG
 #endif
 #endif
 
@@ -98,25 +106,6 @@
 		{{ 0xff, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	\
 	    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 }}      \
 	}
-#endif
-
-/*
- * BSD kernels don't inform userland of DAD results.
- * See the discussion here:
- *    http://mail-index.netbsd.org/tech-net/2013/03/15/msg004019.html
- */
-#ifndef __linux__
-/* We guard here to avoid breaking a compile on linux ppc-64 headers */
-#include <sys/param.h>
-#endif
-#ifdef BSD
-#define IPV6_POLLADDRFLAG
-#endif
-
-/* This was fixed in NetBSD */
-#if (defined(__DragonFly_version) && __DragonFly_version >= 500704) || \
-    (defined(__NetBSD_Version__) && __NetBSD_Version__ >= 699002000)
-#undef IPV6_POLLADDRFLAG
 #endif
 
 /* Of course OpenBSD has their own special name. */
